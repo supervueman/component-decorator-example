@@ -18,6 +18,18 @@ function Component(config: ComponentDecorator) {
 	}
 }
 
+function Bind(_: any, _2: any, descriptor: PropertyDescriptor): PropertyDescriptor {
+	const original = descriptor.value;
+
+	return {
+		configurable: true,
+		enumerable: false,
+		get() {
+			return original.bind(this);
+		}
+	}
+}
+
 @Component({
 	selector: '#card',
 	template: `
@@ -32,9 +44,14 @@ class CardComponent {
 	constructor(public name: string) {
 	}
 
+	@Bind
 	logName(): void {
 		console.log(`Component name: ${this.name}`);
 	}
 }
 
 const card = new CardComponent('My card component');
+
+const btn = document.querySelector('#btn')!;
+
+btn.addEventListener('click', card.logName);
