@@ -4,8 +4,17 @@ interface ComponentDecorator {
 }
 
 function Component(config: ComponentDecorator) {
-	return function (Constructor: Function) {
+	return function <T extends { new(...args: any[]): object }>(Constructor: T) {
+		return class extends Constructor {
+			constructor(...args: any[]) {
+				super(...args)
+				const el = document.querySelector(config.selector);
 
+				if (el) {
+					el.innerHTML = config.template;
+				}
+			}
+		}
 	}
 }
 
@@ -14,7 +23,7 @@ function Component(config: ComponentDecorator) {
 	template: `
 		<div class="card">
 			<div class="card-content">
-				<span class="card-title">Card component</span>
+				<span class="card-title">{{name}}</span>
 			</div>
 		</div>
 	`
@@ -27,3 +36,5 @@ class CardComponent {
 		console.log(`Component name: ${this.name}`);
 	}
 }
+
+const card = new CardComponent('My card component');
